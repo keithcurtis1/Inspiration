@@ -1,13 +1,11 @@
 on('chat:message', (msg) => {
-            
-    //const version = '0.0.2';
-            
     if ('api' === msg.type && /!inspire\b/i.test(msg.content) && msg.selected) {
         log(msg);
-        //get parameter
+        //get parameter and use default of 'give' if parameter is missing or malformed
         let cardAction = msg.content.split(" --")[1];
-
-
+        if ((cardAction !== "give" && cardAction !== "take") || cardAction === false) {
+            cardAction = 'give'
+        }
         //getid of deck
         var inspirationDeck = findObjs({
             _type: "deck",
@@ -50,8 +48,8 @@ on('chat:message', (msg) => {
                             takeCardFromPlayer(ownerid, cardid);
                             break;
                         default:
-                    sendChat('Inspire', '/w gm '+cardAction+' is not a valid parameter Please use --give or --take.');
-                                                break;
+                            sendChat('Inspire', '/w gm ' + cardAction + ' is not a valid parameter Please use --give or --take.');
+                            break;
 
                     }
 
