@@ -2,20 +2,20 @@ on('chat:message', (msg) => {
     if ('api' === msg.type && /!inspire\b/i.test(msg.content) && msg.selected) {
         log(msg);
         //get parameter and use default of 'give' if parameter is missing or malformed
-        let cardAction = msg.content.split(" --")[1];
+        let cardAction = msg.content.split(/\s+--/)[1];
         if ((cardAction !== "give" && cardAction !== "take") || cardAction === false) {
-            cardAction = 'give'
+            cardAction = 'give';
         }
         //getid of deck
-        var inspirationDeck = findObjs({
+        let inspirationDeck = findObjs({
             _type: "deck",
-            name: "Inspiration",
+            name: "Inspiration"
         })[0];
 
         //test if deck exists
         if (inspirationDeck) {
 
-            var deckID = inspirationDeck.get("_id");
+            let deckID = inspirationDeck.id;
 
             //get id of card
             let cardid = drawCard(deckID);
@@ -28,9 +28,9 @@ on('chat:message', (msg) => {
             if (token.get('represents')) {
                 let character = getObj("character", token.get('represents'));
 
-                //Get owner IDs of each
-                tokenOwner = (token.get('controlledby').split(',')[0]);
-                characterOwner = (character.get('controlledby').split(',')[0]);
+                //Get owner IDs of each -- Not needed at this point
+                //tokenOwner = (token.get('controlledby').split(',')[0]);
+                //characterOwner = (character.get('controlledby').split(',')[0]);
                 // If the token represents a character, get the character's controller, otherwise the token's
                 let ownerid = (token.get('controlledby').split(',')[0]);
 
@@ -41,14 +41,11 @@ on('chat:message', (msg) => {
                 if (ownerid !== 'all') {
 
                     switch (cardAction) {
-                        case 'give':
-                            giveCardToPlayer(cardid, ownerid);
-                            break;
                         case 'take':
-                            takeCardFromPlayer(ownerid, cardid);
+                            takeCardFromPlayer(ownerid, {cardid: cardid});
                             break;
                         default:
-                            sendChat('Inspire', '/w gm ' + cardAction + ' is not a valid parameter Please use --give or --take.');
+                            giveCardToPlayer(cardid, ownerid);
                             break;
 
                     }
