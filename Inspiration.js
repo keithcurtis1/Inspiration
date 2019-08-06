@@ -16,7 +16,8 @@ on('chat:message', (msg) => {
         if (inspirationDeck) {
 
             let deckID = inspirationDeck.id;
-
+            // Necessary to shuffle at least once after deck creation because of Roll20 Deck bug
+            shuffleDeck(deckID);
             //get id of card
             let cardid = drawCard(deckID);
 
